@@ -3,6 +3,8 @@
     "zephyr.h": "c",
     "ccs811.h": "c",
     "util.h": "c",
-    "kernel.h": "c"
-  }
+    "kernel.h": "c",
+    "sps30.h": "c"
+  },
+  "nrf-connect.applications": ["${workspaceFolder}"]
 }
