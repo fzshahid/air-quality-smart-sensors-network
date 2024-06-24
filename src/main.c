@@ -27,6 +27,8 @@
 
 int main(void)
 {
+        static const struct device *i2c_dev = DEVICE_DT_GET(I2C_NODE);
+
         struct sps30_measurement m;
         int16_t ret;
 
@@ -42,6 +44,24 @@ int main(void)
                 sensirion_sleep_usec(1000000); /* wait 1s */
         }
         printk("SPS sensor probing successful\n");
+
+        if (i2c_dev == NULL)
+        {
+                printk("Failed to get I2C device\n");
+                return -1;
+        }
+
+        printk("I2C device found\n");
+
+        struct ccs811_data ccs811;
+
+        if (ccs811_init(&ccs811, i2c_dev, CCS811_I2C_ADDRESS) != 0)
+        {
+                printk("Failed to initialize CCS811 sensor\n");
+                return -1;
+        }
+
+        printk("CCS811 initialized\n");
 
         uint8_t fw_major;
         uint8_t fw_minor;
@@ -73,6 +93,24 @@ int main(void)
 
         while (1)
         {
+                uint16_t eco2, tvoc;
+                if (ccs811_data_ready(&ccs811))
+                {
+                        if (ccs811_read(&ccs811, &eco2, &tvoc) == 0)
+                        {
+                                printk("eCO2: %d ppm, TVOC: %d ppb\n", eco2, tvoc);
+                        }
+                        else
+                        {
+                                printk("Failed to read CCS811 sensor data\n");
+                        }
+                }
+                else
+                {
+                        printk("CCS811 data not ready :(\n");
+                }
+                k_sleep(K_SECONDS(1));
+                // ----------------------------------------
                 sensirion_sleep_usec(SPS30_MEASUREMENT_DURATION_USEC); /* wait 1s */
                 ret = sps30_read_measurement(&m);
                 if (ret < 0)
