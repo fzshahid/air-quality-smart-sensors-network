@@ -4,11 +4,11 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/util.h>
-#include "../sensors/ccs811/ccs811.h"
-#include "../sensors/sps30/sps30.h"
 #include "../sensors/scd41/scd4x_i2c.h"
 #include "../sensors/scd41/sensirion_common.h"
 #include "../sensors/scd41/sensirion_i2c_hal.h"
+#include "../sensors/ccs811/ccs811.h"
+#include "../sensors/sps30/sps30.h"
 
 int16_t get_serial(int16_t error, int16_t serial_0, int16_t serial_1, int16_t serial_2);
 bool read_scd41();
@@ -54,11 +54,12 @@ bool read_scd41()
         }
         else
         {
+                printk("SCD41: \n");
                 double temp_cel = temperature / 1000.0;
                 double hum = humidity / 1000.0;
-                printf("CO2: %u ppm\n", co2);
-                printf("Temperature: %.3f *C\n", temp_cel);
-                printf("Humidity: %.3f %%\n", hum);
+                printk("CO2: %u ppm\n", co2);
+                printk("Temperature: %.3f *C\n", temp_cel);
+                printk("Humidity: %.3f %%\n", hum);
         }
         return true;
 }

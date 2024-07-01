@@ -34,7 +34,7 @@
 #include <zephyr/kernel.h>
 
 #include "sensirion_arch_config.h"
-#include "sensirion_common.h"
+#include "../scd41/sensirion_common.h"
 // #include "sensirion_i2c.h"
 
 /* I2C device. */
@@ -54,7 +54,7 @@ int16_t sensirion_i2c_select_bus(uint8_t bus_idx)
     if (bus_idx > 9)
     {
         /* Invalid bus index */
-        return STATUS_FAIL;
+        return 0;
     }
 
     bus_name[4] = bus_idx + '0';
@@ -62,10 +62,10 @@ int16_t sensirion_i2c_select_bus(uint8_t bus_idx)
     if (i2c_dev == NULL)
     {
         /* No valid device found */
-        return STATUS_FAIL;
+        return 0;
     }
 
-    return STATUS_OK;
+    return 1;
 }
 
 /**
