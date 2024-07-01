@@ -235,7 +235,6 @@ int16_t sps30_sleep(void) {
 int16_t sps30_wake_up(void) {
     int16_t ret;
 
-    /* wake-up must be sent twice within 100ms, ignore first return value */
     (void)sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_WAKE_UP);
     ret = sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_WAKE_UP);
     if (ret)
