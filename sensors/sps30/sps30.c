@@ -31,7 +31,8 @@
 
 #include "sps30.h"
 #include "sensirion_arch_config.h"
-#include "sensirion_common.h"
+#include "../scd41/sensirion_common.h"
+#include "../scd41/sensirion_i2c.h"
 #include "sensirion_i2c.h"
 #include "sps_git_version.h"
 
@@ -54,11 +55,13 @@
 
 #define SPS30_SERIAL_NUM_WORDS ((SPS30_MAX_SERIAL_LEN) / 2)
 
-const char* sps_get_driver_version(void) {
+const char *sps_get_driver_version(void)
+{
     return SPS_DRV_VERSION_STR;
 }
 
-int16_t sps30_probe(void) {
+int16_t sps30_probe(void)
+{
     char serial[SPS30_MAX_SERIAL_LEN];
 
     // Try to wake up, but ignore failure if it is not in sleep mode
@@ -67,7 +70,8 @@ int16_t sps30_probe(void) {
     return sps30_get_serial(serial);
 }
 
-int16_t sps30_read_firmware_version(uint8_t* major, uint8_t* minor) {
+int16_t sps30_read_firmware_version(uint8_t *major, uint8_t *minor)
+{
     uint16_t version;
     int16_t ret;
 
@@ -78,17 +82,19 @@ int16_t sps30_read_firmware_version(uint8_t* major, uint8_t* minor) {
     return ret;
 }
 
-int16_t sps30_get_serial(char* serial) {
+int16_t sps30_get_serial(char *serial)
+{
     int16_t error;
 
     error = sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_GET_SERIAL);
 
-    if (error != NO_ERROR) {
+    if (error != NO_ERROR)
+    {
         return error;
     }
 
     error = sensirion_i2c_read_words_as_bytes(
-        SPS30_I2C_ADDRESS, (uint8_t*)serial, SPS30_SERIAL_NUM_WORDS);
+        SPS30_I2C_ADDRESS, (uint8_t *)serial, SPS30_SERIAL_NUM_WORDS);
 
     /* ensure a final '\0'. The firmware should always set this so this is just
      * in case something goes wrong.
@@ -98,7 +104,8 @@ int16_t sps30_get_serial(char* serial) {
     return error;
 }
 
-int16_t sps30_start_measurement(void) {
+int16_t sps30_start_measurement(void)
+{
     const uint16_t arg = SPS_CMD_START_MEASUREMENT_ARG;
 
     int16_t ret = sensirion_i2c_write_cmd_with_args(
@@ -110,32 +117,37 @@ int16_t sps30_start_measurement(void) {
     return ret;
 }
 
-int16_t sps30_stop_measurement(void) {
+int16_t sps30_stop_measurement(void)
+{
     int16_t ret =
         sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_STOP_MEASUREMENT);
     sensirion_sleep_usec(SPS_CMD_START_STOP_DELAY_USEC);
     return ret;
 }
 
-int16_t sps30_read_data_ready(uint16_t* data_ready) {
+int16_t sps30_read_data_ready(uint16_t *data_ready)
+{
     return sensirion_i2c_read_cmd(SPS30_I2C_ADDRESS, SPS_CMD_GET_DATA_READY,
                                   data_ready, SENSIRION_NUM_WORDS(*data_ready));
 }
 
-int16_t sps30_read_measurement(struct sps30_measurement* measurement) {
+int16_t sps30_read_measurement(struct sps30_measurement *measurement)
+{
     int16_t error;
     uint8_t data[10][4];
 
     error =
         sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_READ_MEASUREMENT);
-    if (error != NO_ERROR) {
+    if (error != NO_ERROR)
+    {
         return error;
     }
 
     error = sensirion_i2c_read_words_as_bytes(SPS30_I2C_ADDRESS, &data[0][0],
                                               SENSIRION_NUM_WORDS(data));
 
-    if (error != NO_ERROR) {
+    if (error != NO_ERROR)
+    {
         return error;
     }
 
@@ -153,13 +165,15 @@ int16_t sps30_read_measurement(struct sps30_measurement* measurement) {
     return 0;
 }
 
-int16_t sps30_get_fan_auto_cleaning_interval(uint32_t* interval_seconds) {
+int16_t sps30_get_fan_auto_cleaning_interval(uint32_t *interval_seconds)
+{
     uint8_t data[4];
     int16_t error;
 
     error =
         sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_AUTOCLEAN_INTERVAL);
-    if (error != NO_ERROR) {
+    if (error != NO_ERROR)
+    {
         return error;
     }
 
@@ -167,7 +181,8 @@ int16_t sps30_get_fan_auto_cleaning_interval(uint32_t* interval_seconds) {
 
     error = sensirion_i2c_read_words_as_bytes(SPS30_I2C_ADDRESS, data,
                                               SENSIRION_NUM_WORDS(data));
-    if (error != NO_ERROR) {
+    if (error != NO_ERROR)
+    {
         return error;
     }
 
@@ -176,7 +191,8 @@ int16_t sps30_get_fan_auto_cleaning_interval(uint32_t* interval_seconds) {
     return 0;
 }
 
-int16_t sps30_set_fan_auto_cleaning_interval(uint32_t interval_seconds) {
+int16_t sps30_set_fan_auto_cleaning_interval(uint32_t interval_seconds)
+{
     int16_t ret;
     const uint16_t data[] = {(uint16_t)((interval_seconds & 0xFFFF0000) >> 16),
                              (uint16_t)(interval_seconds & 0x0000FFFF)};
@@ -188,7 +204,8 @@ int16_t sps30_set_fan_auto_cleaning_interval(uint32_t interval_seconds) {
     return ret;
 }
 
-int16_t sps30_get_fan_auto_cleaning_interval_days(uint8_t* interval_days) {
+int16_t sps30_get_fan_auto_cleaning_interval_days(uint8_t *interval_days)
+{
     int16_t ret;
     uint32_t interval_seconds;
 
@@ -200,12 +217,14 @@ int16_t sps30_get_fan_auto_cleaning_interval_days(uint8_t* interval_days) {
     return ret;
 }
 
-int16_t sps30_set_fan_auto_cleaning_interval_days(uint8_t interval_days) {
+int16_t sps30_set_fan_auto_cleaning_interval_days(uint8_t interval_days)
+{
     return sps30_set_fan_auto_cleaning_interval((uint32_t)interval_days * 24 *
                                                 60 * 60);
 }
 
-int16_t sps30_start_manual_fan_cleaning(void) {
+int16_t sps30_start_manual_fan_cleaning(void)
+{
     int16_t ret;
 
     ret = sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS,
@@ -217,11 +236,13 @@ int16_t sps30_start_manual_fan_cleaning(void) {
     return 0;
 }
 
-int16_t sps30_reset(void) {
+int16_t sps30_reset(void)
+{
     return sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_RESET);
 }
 
-int16_t sps30_sleep(void) {
+int16_t sps30_sleep(void)
+{
     int16_t ret;
 
     ret = sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_SLEEP);
@@ -232,10 +253,10 @@ int16_t sps30_sleep(void) {
     return 0;
 }
 
-int16_t sps30_wake_up(void) {
+int16_t sps30_wake_up(void)
+{
     int16_t ret;
 
-    /* wake-up must be sent twice within 100ms, ignore first return value */
     (void)sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_WAKE_UP);
     ret = sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_WAKE_UP);
     if (ret)
@@ -245,7 +266,8 @@ int16_t sps30_wake_up(void) {
     return 0;
 }
 
-int16_t sps30_read_device_status_register(uint32_t* device_status_flags) {
+int16_t sps30_read_device_status_register(uint32_t *device_status_flags)
+{
     int16_t ret;
     uint16_t word_buf[2];
 
