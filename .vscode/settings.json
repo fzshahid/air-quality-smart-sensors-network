@@ -4,7 +4,8 @@
     "ccs811.h": "c",
     "util.h": "c",
     "kernel.h": "c",
-    "sps30.h": "c"
+    "sps30.h": "c",
+    "sensirion_common.h": "c"
   },
   "nrf-connect.applications": ["${workspaceFolder}"]
 }
