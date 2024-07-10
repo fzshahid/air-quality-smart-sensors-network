@@ -5,7 +5,9 @@
     "util.h": "c",
     "kernel.h": "c",
     "sps30.h": "c",
-    "sensirion_common.h": "c"
+    "sensirion_common.h": "c",
+    "scd4x_i2c.h": "c",
+    "openthread.h": "c"
   },
   "nrf-connect.applications": ["${workspaceFolder}"]
 }
