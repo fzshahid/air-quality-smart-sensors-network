@@ -185,7 +185,7 @@ static void coap_send_data_request(struct k_work *work)
                         printk("Ops!");
                         break;
                 }
-                memset(&sensors_data, 0, sizeof(sensors_data));
+                memset(sensors_data, 0, sizeof(sensors_data));
                 memset(&myMessageInfo, 0, sizeof(myMessageInfo));
                 myMessageInfo.mPeerPort = OT_DEFAULT_COAP_PORT;
 
@@ -207,7 +207,7 @@ static void coap_send_data_request(struct k_work *work)
         {
                 printk("CoAP data send.\n");
         }
-        free(sensors_data);
+        // free(sensors_data);
 }
 
 K_WORK_DEFINE(sensor_work, coap_send_data_request);
